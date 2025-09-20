@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ContentFilters</key>
+	<dict/>
+	<key>auto_connect</key>
+	<true/>
+	<key>data</key>
+	<dict>
+		<key>connection</key>
+		<dict>
+			<key>allowDataLocalInfile</key>
+			<integer>0</integer>
+			<key>database</key>
+			<string>sql_project_p1</string>
+			<key>enableClearTextPlugin</key>
+			<integer>0</integer>
+			<key>host</key>
+			<string>localhost</string>
+			<key>name</key>
+			<string>sql_project_p1</string>
+			<key>rdbms_type</key>
+			<string>mysql</string>
+			<key>sslCACertFileLocation</key>
+			<string></string>
+			<key>sslCACertFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslCertificateFileLocation</key>
+			<string></string>
+			<key>sslCertificateFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslKeyFileLocation</key>
+			<string></string>
+			<key>sslKeyFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>type</key>
+			<string>SPTCPIPConnection</string>
+			<key>useSSL</key>
+			<integer>0</integer>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+		<key>session</key>
+		<dict>
+			<key>connectionEncoding</key>
+			<string>utf8mb4</string>
+			<key>contentFilterV2</key>
+			<dict>
+				<key>children</key>
+				<array/>
+				<key>filterClass</key>
+				<string>groupNode</string>
+				<key>isConjunction</key>
+				<true/>
+			</dict>
+			<key>contentPageNumber</key>
+			<integer>1</integer>
+			<key>contentSelection</key>
+			<data>
+			YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0
+			b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRk
+			YXRhgAGoCwwXGBkaHiVVJG51bGzTDQ4PEBMWV05TLmtleXNaTlMu
+			b2JqZWN0c1YkY2xhc3OiERKAAoADohQVgASABYAHVHR5cGVUcm93
+			c18QHVNlbGVjdGlvbkRldGFpbFR5cGVOU0luZGV4U2V00hsPHB1c
+			TlNSYW5nZUNvdW50EACABtIfICEiWiRjbGFzc25hbWVYJGNsYXNz
+			ZXNaTlNJbmRleFNldKIjJFpOU0luZGV4U2V0WE5TT2JqZWN00h8g
+			JidcTlNEaWN0aW9uYXJ5oiYkAAgAEQAaACQAKQAyADcASQBMAFEA
+			UwBcAGIAaQBxAHwAgwCGAIgAigCNAI8AkQCTAJgAnQC9AMIAzwDR
+			ANMA2ADjAOwA9wD6AQUBDgETASAAAAAAAAACAQAAAAAAAAAoAAAA
+			AAAAAAAAAAAAAAABIw==
+			</data>
+			<key>contentSortColIsAsc</key>
+			<true/>
+			<key>contentViewport</key>
+			<string>{{0, 0}, {693, 473}}</string>
+			<key>isToolbarVisible</key>
+			<true/>
+			<key>queries</key>
+			<string>-- ===============================================
+-- SQL Retail Sales Analysis Project
+-- ===============================================
+
+-- Create Database &amp; Table
+CREATE DATABASE sql_project_p1;
+USE sql_project_p1;
+
+DROP TABLE IF EXISTS retail_sales;
+
+CREATE TABLE retail_sales (
+    transactions_id   INT PRIMARY KEY,
+    sale_date         DATE,
+    sale_time         TIME,
+    customer_id       INT,
+    gender            VARCHAR(50),
+    age               INT,
+    category          VARCHAR(50),
+    quantity          INT,
+    price_per_unit    FLOAT,
+    cogs              FLOAT,
+    total_sales       FLOAT
+);
+
+-- Preview data
+SELECT * 
+FROM retail_sales
+LIMIT 10;
+
+TRUNCATE retail_sales;
+
+-- Row count
+SELECT COUNT(*) AS total_rows
+FROM retail_sales;
+
+
+-- ===============================================
+-- DATA CLEANING
+-- ===============================================
+
+-- Check NULL values
+SELECT *
+FROM retail_sales
+WHERE transactions_id IS NULL
+   OR sale_date IS NULL
+   OR sale_time IS NULL
+   OR customer_id IS NULL
+   OR gender IS NULL
+   OR age IS NULL
+   OR category IS NULL
+   OR quantity IS NULL
+   OR price_per_unit IS NULL
+   OR cogs IS NULL
+   OR total_sales IS NULL;
+
+-- Delete NULL records
+DELETE 
+FROM retail_sales
+WHERE transactions_id IS NULL
+   OR sale_date IS NULL
+   OR sale_time IS NULL
+   OR customer_id IS NULL
+   OR gender IS NULL
+   OR age IS NULL
+   OR category IS NULL
+   OR quantity IS NULL
+   OR price_per_unit IS NULL
+   OR cogs IS NULL
+   OR total_sales IS NULL;
+
+
+-- ===============================================
+-- DATA EXPLORATION
+-- ===============================================
+
+-- 1) Total sales count
+SELECT COUNT(*) AS total_sales
+FROM retail_sales;
+
+-- 2) Unique customers
+SELECT COUNT(DISTINCT customer_id) AS total_customers
+FROM retail_sales;
+
+-- 3) Unique categories
+SELECT COUNT(DISTINCT category) AS unique_categories
+FROM retail_sales;
+
+
+-- ===============================================
+-- DATA ANALYSIS &amp; BUSINESS QUERIES
+-- ===============================================
+
+-- Q1: Retrieve all sales on '2022-11-05'
+SELECT *
+FROM retail_sales
+WHERE sale_date = '2022-11-05';
+
+-- Q2: Clothing category with quantity &gt; 10 in Nov-2022
+SELECT *
+FROM retail_sales
+WHERE category = 'Clothing'
+  AND DATE_FORMAT(sale_date, '%Y-%m') = '2022-11'
+  AND quantity &gt; 10;
+
+-- Q3: Total sales per category
+SELECT 
+    category,
+    SUM(total_sales) AS net_sales,
+    COUNT(*) AS total_orders
+FROM retail_sales
+GROUP BY category;
+
+-- Q4: Average age of customers in Beauty category
+SELECT ROUND(AVG(age), 1) AS avg_age
+FROM retail_sales
+WHERE category = 'Beauty';
+
+-- Q5: Transactions where total_sales &gt; 1000
+SELECT *
+FROM retail_sales
+WHERE total_sales &gt; 1000;
+
+-- Q6: Total transactions by gender &amp; category
+SELECT 
+    gender,
+    category,
+    COUNT(transactions_id) AS total_transactions
+FROM retail_sales
+GROUP BY gender, category
+ORDER BY total_transactions DESC;
+
+-- Q7: Best-selling month per year (highest avg sales)
+SELECT *
+FROM (
+    SELECT 
+        YEAR(sale_date) AS year,
+        MONTH(sale_date) AS month,
+        ROUND(AVG(total_sales), 2) AS avg_sales,
+        RANK() OVER (
+            PARTITION BY YEAR(sale_date) 
+            ORDER BY AVG(total_sales) DESC
+        ) AS rank_num
+    FROM retail_sales
+    GROUP BY YEAR(sale_date), MONTH(sale_date)
+) AS t1
+WHERE rank_num = 1
+ORDER BY year;
+
+-- Q8: Top 5 customers by total sales
+SELECT 
+    customer_id,
+    SUM(total_sales) AS total_sales
+FROM retail_sales
+GROUP BY customer_id
+ORDER BY total_sales DESC
+LIMIT 5;
+
+-- Q9: Unique customers per category
+SELECT 
+    category,
+    COUNT(DISTINCT customer_id) AS unique_customers
+FROM retail_sales
+GROUP BY category;
+
+-- Q10: Shift-wise order distribution
+SELECT 
+    *,
+    CASE 
+        WHEN HOUR(sale_time) &lt; 12 THEN 'Morning'
+        WHEN HOUR(sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
+        ELSE 'Evening'
+    END AS shift
+FROM retail_sales;
+</string>
+			<key>view</key>
+			<string>SP_VIEW_CUSTOMQUERY</string>
+			<key>windowVerticalDividerPosition</key>
+			<real>0.0</real>
+		</dict>
+	</dict>
+	<key>encrypted</key>
+	<false/>
+	<key>format</key>
+	<string>connection</string>
+	<key>queryFavorites</key>
+	<array/>
+	<key>rdbms_type</key>
+	<string>mysql</string>
+	<key>rdbms_version</key>
+	<string>8.0.34</string>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>
